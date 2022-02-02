@@ -1,7 +1,11 @@
 package me.TAJLN.Vremenko;
 
+import java.sql.Timestamp;
+
 public class Vreme {
     private Integer id;
+
+    private Timestamp time;
 
     private float vlaga;
     private float pritisk;
@@ -84,6 +88,11 @@ public class Vreme {
         return postaja;
     }
 
+    public void setTime(Timestamp time) {
+        this.time = time;
+    }
 
-
+    public Timestamp getTime(){
+        return time;
+    }
 }

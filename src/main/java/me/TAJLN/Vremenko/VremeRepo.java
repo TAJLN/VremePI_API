@@ -12,6 +12,7 @@ import java.util.ArrayList;
 public class VremeRepo {
 
     static String GET_ALL = "select * from podatki;";
+    static String GET_LATEST = "SELECT * FROM `podatki` order by cas DESC LIMIT 1;";
     static String NEW = "insert into podatki(vlaga, pritisk, temperatura, svetloba, oxid, redu, nh3, PID) values(?, ?, ?, ?, ?, ?, ?, ?);";
     static DataSource source;
 
@@ -31,15 +32,16 @@ public class VremeRepo {
             while (resultSet.next())
             {
                 Vreme vreme = new Vreme();
-                vreme.setId(p.getResultSet().getInt("id"));
-                vreme.setVlaga(p.getResultSet().getFloat("vlaga"));
-                vreme.setPritisk(p.getResultSet().getFloat("pritisk"));
-                vreme.setTemperatura(p.getResultSet().getFloat("temperatura"));
-                vreme.setVlaga(p.getResultSet().getFloat("svetloba"));
-                vreme.setOxid(p.getResultSet().getFloat("oxid"));
-                vreme.setRedu(p.getResultSet().getFloat("redu"));
-                vreme.setNh3(p.getResultSet().getFloat("nh3"));
-                vreme.setPostaja(p.getResultSet().getInt("pid"));
+                vreme.setId(resultSet.getInt("id"));
+                vreme.setTime(resultSet.getTimestamp("cas"));
+                vreme.setVlaga(resultSet.getFloat("vlaga"));
+                vreme.setPritisk(resultSet.getFloat("pritisk"));
+                vreme.setTemperatura(resultSet.getFloat("temperatura"));
+                vreme.setVlaga(resultSet.getFloat("svetloba"));
+                vreme.setOxid(resultSet.getFloat("oxid"));
+                vreme.setRedu(resultSet.getFloat("redu"));
+                vreme.setNh3(resultSet.getFloat("nh3"));
+                vreme.setPostaja(resultSet.getInt("pid"));
                 vremelist.add(vreme);
             }
             con.close();
@@ -49,6 +51,40 @@ public class VremeRepo {
         }
 
         return vremelist;
+    }
+
+    static Vreme latest() {
+
+        Vreme vreme = new Vreme();
+
+        try
+        {
+
+            Connection con = connect().getConnection();
+            PreparedStatement p = con.prepareStatement(GET_LATEST);
+            p.executeQuery();
+
+            ResultSet resultSet = p.getResultSet();
+
+            while (resultSet.next()) {
+                vreme.setId(resultSet.getInt("id"));
+                vreme.setTime(resultSet.getTimestamp("cas"));
+                vreme.setVlaga(resultSet.getFloat("vlaga"));
+                vreme.setPritisk(resultSet.getFloat("pritisk"));
+                vreme.setTemperatura(resultSet.getFloat("temperatura"));
+                vreme.setVlaga(resultSet.getFloat("svetloba"));
+                vreme.setOxid(resultSet.getFloat("oxid"));
+                vreme.setRedu(resultSet.getFloat("redu"));
+                vreme.setNh3(resultSet.getFloat("nh3"));
+                vreme.setPostaja(resultSet.getInt("pid"));
+            }
+            con.close();
+
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        return vreme;
     }
 
     static void addData(Vreme vreme){

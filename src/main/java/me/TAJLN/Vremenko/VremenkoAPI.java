@@ -7,10 +7,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @EnableAutoConfiguration
 @SpringBootApplication
-public class VremenkoApplication {
+public class VremenkoAPI {
 
 	public static void main(String[] args) {
-		SpringApplication.run(VremenkoApplication.class, args);
+		SpringApplication.run(VremenkoAPI.class, args);
 	}
 
 }

@@ -78,4 +78,11 @@ public class VremeController {
         System.out.println("Sent all from podatki");
         return VremeRepo.findAll();
     }
+
+    @GetMapping(path="/latest")
+    public @ResponseBody
+    Vreme getLatestpodatki() {
+        System.out.println("Sent latest from podatki");
+        return VremeRepo.latest();
+    }
 }
