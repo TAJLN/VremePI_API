@@ -12,6 +12,7 @@ import java.util.ArrayList;
 public class VremeRepo {
 
     static String GET_ALL = "select * from podatki;";
+    static String GET_LAST_30 = "SELECT * FROM `podatki` order by id asc LIMIT 30;";
     static String GET_LATEST = "SELECT * FROM `podatki` order by cas DESC LIMIT 1;";
     static String NEW = "insert into podatki(vlaga, pritisk, temperatura, svetloba, oxid, redu, nh3, PID) values(?, ?, ?, ?, ?, ?, ?, ?);";
     static DataSource source;
@@ -25,6 +26,43 @@ public class VremeRepo {
 
             Connection con = connect().getConnection();
             PreparedStatement p = con.prepareStatement(GET_ALL);
+            p.executeQuery();
+
+            ResultSet resultSet = p.getResultSet();
+
+            while (resultSet.next())
+            {
+                Vreme vreme = new Vreme();
+                vreme.setId(resultSet.getInt("id"));
+                vreme.setTime(resultSet.getTimestamp("cas"));
+                vreme.setVlaga(resultSet.getFloat("vlaga"));
+                vreme.setPritisk(resultSet.getFloat("pritisk"));
+                vreme.setTemperatura(resultSet.getFloat("temperatura"));
+                vreme.setVlaga(resultSet.getFloat("svetloba"));
+                vreme.setOxid(resultSet.getFloat("oxid"));
+                vreme.setRedu(resultSet.getFloat("redu"));
+                vreme.setNh3(resultSet.getFloat("nh3"));
+                vreme.setPostaja(resultSet.getInt("pid"));
+                vremelist.add(vreme);
+            }
+            con.close();
+
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        return vremelist;
+    }
+
+    static ArrayList<Vreme> last30() {
+
+        ArrayList<Vreme> vremelist = new ArrayList<>();
+
+        try
+        {
+
+            Connection con = connect().getConnection();
+            PreparedStatement p = con.prepareStatement(GET_LAST_30);
             p.executeQuery();
 
             ResultSet resultSet = p.getResultSet();

@@ -85,4 +85,11 @@ public class VremeController {
         System.out.println("Sent latest from podatki");
         return VremeRepo.latest();
     }
+
+    @GetMapping(path="/last30")
+    public @ResponseBody
+    ArrayList<Vreme> last30() {
+        System.out.println("Sent last 30 from podatki");
+        return VremeRepo.last30();
+    }
 }
