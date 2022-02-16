@@ -8,11 +8,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class VremeRepo {
 
     static String GET_ALL = "select * from podatki;";
-    static String GET_LAST_30 = "SELECT * FROM `podatki` order by id asc LIMIT 30;";
+    static String GET_LAST_30 = "SELECT * FROM `podatki` order by id desc LIMIT 30;";
     static String GET_LATEST = "SELECT * FROM `podatki` order by cas DESC LIMIT 1;";
     static String NEW = "insert into podatki(vlaga, pritisk, temperatura, svetloba, oxid, redu, nh3, PID) values(?, ?, ?, ?, ?, ?, ?, ?);";
     static DataSource source;
@@ -87,6 +88,8 @@ public class VremeRepo {
         } catch (SQLException e){
             e.printStackTrace();
         }
+
+        Collections.reverse(vremelist);
 
         return vremelist;
     }
