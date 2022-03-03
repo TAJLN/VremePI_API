@@ -16,6 +16,7 @@ public class VremeRepo {
     static String GET_LAST_30 = "SELECT * FROM `podatki` order by id desc LIMIT 30;";
     static String GET_LATEST = "SELECT * FROM `podatki` order by cas DESC LIMIT 1;";
     static String NEW = "insert into podatki(vlaga, pritisk, temperatura, svetloba, oxid, redu, nh3, PID) values(?, ?, ?, ?, ?, ?, ?, ?);";
+    static String GET_POSTAJA = "select * from postaje where kljuc = ?";
     static DataSource source;
 
     static ArrayList<Vreme> findAll() {
@@ -53,6 +54,34 @@ public class VremeRepo {
         }
 
         return vremelist;
+    }
+
+    static Postaja getPostaja(String kljuc){
+        Postaja po = new Postaja();
+        try{
+            Connection con = connect().getConnection();
+            PreparedStatement p = con.prepareStatement(GET_POSTAJA);
+            p.setString(1, kljuc);
+            p.executeQuery();
+
+            ResultSet resultSet = p.getResultSet();
+
+            if (resultSet!=null){
+                while(resultSet.next()) {
+                    po.setId(resultSet.getInt("id"));
+                    po.setIme(resultSet.getString("ime"));
+                    po.setKljuc(resultSet.getString("kljuc"));
+                }
+            }
+            else{
+                po = null;
+            }
+
+        } catch(SQLException e){
+            e.printStackTrace();
+        }
+
+        return po;
     }
 
     static ArrayList<Vreme> last30() {

@@ -11,15 +11,8 @@ import java.util.ArrayList;
 @Controller
 @RequestMapping(path="/podatki")
 public class VremeController {
-
-    //@RequestParam(name="vlaga") float vlaga
-    //            , @RequestParam(name="temperatura") float temperatura,@RequestParam(name="svetloba") float svetloba, @RequestParam(name="oxid") float oxid,@RequestParam(name="redu") float redu, @RequestParam(name="nh3") float nh3, @RequestParam(name="postaja") int postaja
-
-    @PostMapping(path="/addVreme") // Map ONLY POST Requests
+    @PostMapping(path="/addVreme")
     public @ResponseBody String addVreme (@RequestBody String body) {
-        // @ResponseBody means the returned String is the response, not a view name
-        // @RequestParam means it is a parameter from the GET or POST request
-
         JSONObject obj;
         float vlaga;
         float pritisk;
@@ -90,5 +83,35 @@ public class VremeController {
     ArrayList<Vreme> last30() {
         System.out.println("Sent last 30 from podatki");
         return VremeRepo.last30();
+    }
+
+    @GetMapping(path="/login")
+    public @ResponseBody String login (@RequestBody String body){
+
+        JSONObject resp = new JSONObject();
+
+        try {
+            if (body != null) {
+                JSONObject obj = new JSONObject(body);
+                String kljuc = obj.getString("kljuc");
+                Postaja p = VremeRepo.getPostaja(kljuc);
+                if (p.getId() == 0) {
+                    resp.put("status", "failed");
+                    resp.put("Error","Wrong key");
+                }
+                else {
+                    resp.put("status", "success");
+                    resp.put("id", p.getId());
+                    resp.put("ime", p.getIme());
+                    resp.put("kljuc", p.getKljuc());
+                }
+            } else {
+                resp.put("Error", "No key sent");
+            }
+        } catch(JSONException e){
+            e.printStackTrace();
+        }
+
+        return resp.toString();
     }
 }
