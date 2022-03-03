@@ -39,7 +39,7 @@ public class VremeRepo {
                 vreme.setVlaga(resultSet.getFloat("vlaga"));
                 vreme.setPritisk(resultSet.getFloat("pritisk"));
                 vreme.setTemperatura(resultSet.getFloat("temperatura"));
-                vreme.setVlaga(resultSet.getFloat("svetloba"));
+                vreme.setSvetloba(resultSet.getFloat("svetloba"));
                 vreme.setOxid(resultSet.getFloat("oxid"));
                 vreme.setRedu(resultSet.getFloat("redu"));
                 vreme.setNh3(resultSet.getFloat("nh3"));
@@ -76,7 +76,7 @@ public class VremeRepo {
                 vreme.setVlaga(resultSet.getFloat("vlaga"));
                 vreme.setPritisk(resultSet.getFloat("pritisk"));
                 vreme.setTemperatura(resultSet.getFloat("temperatura"));
-                vreme.setVlaga(resultSet.getFloat("svetloba"));
+                vreme.setSvetloba(resultSet.getFloat("svetloba"));
                 vreme.setOxid(resultSet.getFloat("oxid"));
                 vreme.setRedu(resultSet.getFloat("redu"));
                 vreme.setNh3(resultSet.getFloat("nh3"));
@@ -113,7 +113,7 @@ public class VremeRepo {
                 vreme.setVlaga(resultSet.getFloat("vlaga"));
                 vreme.setPritisk(resultSet.getFloat("pritisk"));
                 vreme.setTemperatura(resultSet.getFloat("temperatura"));
-                vreme.setVlaga(resultSet.getFloat("svetloba"));
+                vreme.setSvetloba(resultSet.getFloat("svetloba"));
                 vreme.setOxid(resultSet.getFloat("oxid"));
                 vreme.setRedu(resultSet.getFloat("redu"));
                 vreme.setNh3(resultSet.getFloat("nh3"));
