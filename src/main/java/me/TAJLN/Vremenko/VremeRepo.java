@@ -12,14 +12,14 @@ import java.util.Collections;
 
 public class VremeRepo {
 
-    static String GET_ALL = "select * from podatki;";
-    static String GET_LAST_30 = "SELECT * FROM `podatki` order by id desc LIMIT 30;";
-    static String GET_LATEST = "SELECT * FROM `podatki` order by cas DESC LIMIT 1;";
+    static String GET_ALL = "select * from podatki where PID = ?;";
+    static String GET_LAST_30 = "SELECT * FROM `podatki` where PID = ? order by id desc LIMIT 30;";
+    static String GET_LATEST = "SELECT * FROM `podatki` where PID = ? order by cas DESC LIMIT 1;";
     static String NEW = "insert into podatki(vlaga, pritisk, temperatura, svetloba, oxid, redu, nh3, PID) values(?, ?, ?, ?, ?, ?, ?, ?);";
     static String GET_POSTAJA = "select * from postaje where kljuc = ?";
     static DataSource source;
 
-    static ArrayList<Vreme> findAll() {
+    static ArrayList<Vreme> findAll(int id) {
 
         ArrayList<Vreme> vremelist = new ArrayList<>();
 
@@ -28,6 +28,7 @@ public class VremeRepo {
 
             Connection con = connect().getConnection();
             PreparedStatement p = con.prepareStatement(GET_ALL);
+            p.setInt(1, id);
             p.executeQuery();
 
             ResultSet resultSet = p.getResultSet();
@@ -84,7 +85,7 @@ public class VremeRepo {
         return po;
     }
 
-    static ArrayList<Vreme> last30() {
+    static ArrayList<Vreme> last30(int id) {
 
         ArrayList<Vreme> vremelist = new ArrayList<>();
 
@@ -93,6 +94,7 @@ public class VremeRepo {
 
             Connection con = connect().getConnection();
             PreparedStatement p = con.prepareStatement(GET_LAST_30);
+            p.setInt(1, id);
             p.executeQuery();
 
             ResultSet resultSet = p.getResultSet();
@@ -123,7 +125,7 @@ public class VremeRepo {
         return vremelist;
     }
 
-    static Vreme latest() {
+    static Vreme latest(int id) {
 
         Vreme vreme = new Vreme();
 
@@ -132,6 +134,7 @@ public class VremeRepo {
 
             Connection con = connect().getConnection();
             PreparedStatement p = con.prepareStatement(GET_LATEST);
+            p.setInt(1, id);
             p.executeQuery();
 
             ResultSet resultSet = p.getResultSet();
