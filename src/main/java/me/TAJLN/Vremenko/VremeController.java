@@ -74,7 +74,7 @@ public class VremeController {
         return output;
     }
 
-    @GetMapping(path="/all")
+    @PostMapping(path="/all")
     public @ResponseBody
     Object getAllPodatki(@RequestBody String body) throws JSONException {
         JSONObject obj = new JSONObject(body);
@@ -92,7 +92,7 @@ public class VremeController {
         return VremeRepo.findAll(id);
     }
 
-    @GetMapping(path="/latest")
+    @PostMapping(path="/latest")
     public @ResponseBody
     Object getLatestpodatki(@RequestBody String body) throws JSONException {
         JSONObject obj = new JSONObject(body);
@@ -110,7 +110,7 @@ public class VremeController {
         return VremeRepo.latest(id);
     }
 
-    @GetMapping(path="/last30")
+    @PostMapping(path="/last30")
     public @ResponseBody
     Object last30(@RequestBody String body) throws JSONException {
         JSONObject obj = new JSONObject(body);
@@ -128,7 +128,7 @@ public class VremeController {
         return VremeRepo.last30(id);
     }
 
-    @GetMapping(path="/login")
+    @PostMapping(path="/login")
     public @ResponseBody String login (@RequestBody String body) throws JSONException {
 
         JSONObject resp = new JSONObject();
