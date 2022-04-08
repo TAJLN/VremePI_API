@@ -112,13 +112,15 @@ public class VremeController {
 
     @PostMapping(path = "/addPostaja")
     public @ResponseBody
-    Object addPostaja(@RequestBody String body) throws JSONException {
+    Object addPostaja(@RequestBody String body) throws JSONException, IOException {
         JSONObject obj = new JSONObject(body);
         String ime = obj.getString("ime");
         String owner_token = obj.getString("token");
 
+        String oneaccount_id = Utils.oneaccount_id(owner_token);
+
         try{
-            VremeRepo.addPostaja(ime, owner_token);
+            VremeRepo.addPostaja(ime, oneaccount_id);
 
             System.out.println("Postaja added");
             return "Postaja added";
@@ -149,13 +151,15 @@ public class VremeController {
 
     @PostMapping(path = "/deletePostaja")
     public @ResponseBody
-    Object deletePostaja(@RequestBody String body) throws JSONException {
+    Object deletePostaja(@RequestBody String body) throws JSONException, IOException {
         JSONObject obj = new JSONObject(body);
         String kljuc = obj.getString("kljuc");
-        String owner_oneaccountid = obj.getString("token");
+        String owner_token = obj.getString("token");
+
+        String oneaccount_id = Utils.oneaccount_id(owner_token);
 
         try{
-            VremeRepo.deletePostaja(kljuc, owner_oneaccountid);
+            VremeRepo.deletePostaja(kljuc, oneaccount_id);
 
             System.out.println("Postaja deleted");
             return "Postaja deleted";
@@ -188,13 +192,15 @@ public class VremeController {
 
     @PostMapping(path="/getUserPostaje")
     public @ResponseBody
-    Object getUserPostaje(@RequestBody String body) throws JSONException {
+    Object getUserPostaje(@RequestBody String body) throws JSONException, IOException {
         JSONObject obj = new JSONObject(body);
         String token = obj.getString("token");
 
+        String oneaccount_id = Utils.oneaccount_id(token);
+
         try {
             System.out.println("Sent postaje for token: " + token);
-            return VremeRepo.getUserPostaje(token).toString();
+            return VremeRepo.getUserPostaje(oneaccount_id).toString();
         } catch (Exception e){
             e.printStackTrace();
             System.out.println("Failed to get postaje");
