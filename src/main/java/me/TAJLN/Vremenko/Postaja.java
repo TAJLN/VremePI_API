@@ -5,6 +5,7 @@ public class Postaja {
     private int id;
     private String ime;
     private String kljuc;
+    private int lastnik;
 
     public int getId(){
         return id;
@@ -26,7 +27,15 @@ public class Postaja {
         return kljuc;
     }
 
-    public void setKljuc(String kluc){
+    public void setKljuc(String kljuc){
         this.kljuc = kljuc;
+    }
+
+    public int getLastnik(){
+        return lastnik;
+    }
+
+    public void setLastnik(int lastnik){
+        this.lastnik = lastnik;
     }
 }

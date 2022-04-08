@@ -1,12 +1,13 @@
 package me.TAJLN.Vremenko;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -15,8 +16,13 @@ public class VremeRepo {
     static String GET_ALL = "select * from podatki where PID = ?;";
     static String GET_LAST_30 = "SELECT * FROM `podatki` where PID = ? order by id desc LIMIT 30;";
     static String GET_LATEST = "SELECT * FROM `podatki` where PID = ? order by cas DESC LIMIT 1;";
-    static String NEW = "insert into podatki(vlaga, pritisk, temperatura, svetloba, oxid, redu, nh3, PID) values(?, ?, ?, ?, ?, ?, ?, ?);";
+    static String NEW_POSTAJA = "insert into podatki(vlaga, pritisk, temperatura, svetloba, oxid, redu, nh3, PID) values(?, ?, ?, ?, ?, ?, ?, ?);";
+    static String NEW_USER = "insert into uporabniki(oneaccount_id) values(?);";
+    static String GET_USER_ID = "select id from uporabniki where oneaccount_id = ?";
     static String GET_POSTAJA = "select * from postaje where kljuc = ?";
+    static String GET_USER_POSTAJE = "select * from postaje where lastnik = ?";
+    static String ADD_POSTAJA = "insert into postaje(ime, kljuc, lastnik) values(?,?,?);";
+    static String DELETE_POSTAJA = "delete from postaje where kljuc=?;";
     static DataSource source;
 
     static ArrayList<Vreme> findAll(int id) {
@@ -57,6 +63,97 @@ public class VremeRepo {
         return vremelist;
     }
 
+
+
+    //User
+    static void createUser(String oneaccount_id) {
+
+        try {
+            Connection con = connect().getConnection();
+            PreparedStatement p = con.prepareStatement(NEW_USER);
+            p.setString(1, oneaccount_id);
+            p.executeUpdate();
+            con.close();
+        }
+            catch(SQLIntegrityConstraintViolationException ignored){
+
+            } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    static int getUserId(String oneaccount_id) throws SQLException {
+        Connection con = connect().getConnection();
+        PreparedStatement p = con.prepareStatement(GET_USER_ID);
+        p.setString(1, oneaccount_id);
+        p.executeQuery();
+
+        ResultSet resultSet = p.getResultSet();
+
+        while (resultSet.next())
+        {
+            return resultSet.getInt("id");
+        }
+
+
+        con.close();
+        return -1;
+    }
+
+    static JSONArray getUserPostaje(String oneaccount_id) throws SQLException, JSONException {
+        JSONArray arr = new JSONArray();
+
+        Connection con = connect().getConnection();
+        PreparedStatement p = con.prepareStatement(GET_USER_POSTAJE);
+        p.setInt(1, getUserId(oneaccount_id));
+        p.executeQuery();
+
+        ResultSet resultSet = p.getResultSet();
+
+        while (resultSet.next()) {
+            Postaja postaja = getPostaja(resultSet.getString("kljuc"));
+
+            JSONObject obj = new JSONObject();
+            obj.put("id", postaja.getId());
+            obj.put("ime", postaja.getIme());
+            obj.put("kljuc", postaja.getKljuc());
+            obj.put("lastnik", postaja.getLastnik());
+
+            arr.put(obj);
+        }
+
+        con.close();
+
+        return arr;
+
+    }
+
+    //Postaja
+
+    static void addPostaja(String ime, String owner_oneaccountid) throws SQLException {
+        Connection con = connect().getConnection();
+        PreparedStatement p = con.prepareStatement(ADD_POSTAJA);
+
+        p.setString(1, ime);
+        p.setString(2, String.valueOf(new RandomString().nextString()));
+        p.setInt(3, getUserId(owner_oneaccountid));
+        p.executeUpdate();
+        con.close();
+    }
+
+    static void deletePostaja(String kljuc, String owner_oneaccountid) throws SQLException {
+        Postaja postaja = getPostaja(kljuc);
+        if(postaja.getLastnik() != getUserId(owner_oneaccountid))
+            return;
+
+        Connection con = connect().getConnection();
+        PreparedStatement p = con.prepareStatement(DELETE_POSTAJA);
+        p.setString(1, kljuc);
+        p.executeUpdate();
+        con.close();
+    }
+
     static Postaja getPostaja(String kljuc){
         Postaja po = new Postaja();
         try{
@@ -72,16 +169,16 @@ public class VremeRepo {
                     po.setId(resultSet.getInt("id"));
                     po.setIme(resultSet.getString("ime"));
                     po.setKljuc(resultSet.getString("kljuc"));
+                    po.setLastnik(resultSet.getInt("lastnik"));
                 }
             }
             else{
                 po = null;
             }
-
+            con.close();
         } catch(SQLException e){
             e.printStackTrace();
         }
-
         return po;
     }
 
@@ -163,7 +260,7 @@ public class VremeRepo {
     static void addData(Vreme vreme){
         try {
             Connection con = connect().getConnection();
-            PreparedStatement p = con.prepareStatement(NEW);
+            PreparedStatement p = con.prepareStatement(NEW_POSTAJA);
 
             p.setFloat(1, vreme.getVlaga());
             p.setFloat(2, vreme.getPritisk());

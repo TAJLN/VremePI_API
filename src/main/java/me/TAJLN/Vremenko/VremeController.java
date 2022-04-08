@@ -5,8 +5,8 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 
 @Controller
 @RequestMapping(path="/podatki")
@@ -108,6 +108,98 @@ public class VremeController {
 
         System.out.println("Sent latest from podatki");
         return VremeRepo.latest(id);
+    }
+
+    @PostMapping(path = "/addPostaja")
+    public @ResponseBody
+    Object addPostaja(@RequestBody String body) throws JSONException {
+        JSONObject obj = new JSONObject(body);
+        String ime = obj.getString("ime");
+        String owner_token = obj.getString("token");
+
+        try{
+            VremeRepo.addPostaja(ime, owner_token);
+
+            System.out.println("Postaja added");
+            return "Postaja added";
+        } catch(Exception e){
+            e.printStackTrace();
+            System.out.println("Failed to add postaja");
+            return "Failed to add postaja";
+        }
+
+
+    }
+
+    @PostMapping(path = "/getPostaja")
+    public @ResponseBody
+    Object getPostaja(@RequestBody String body) throws JSONException {
+        JSONObject obj = new JSONObject(body);
+        String kljuc = obj.getString("kljuc");
+        try{
+             Postaja postaja = VremeRepo.getPostaja(kljuc);
+             System.out.println("Sent postaja");
+             return postaja;
+        } catch (Exception e){
+            e.printStackTrace();
+            System.out.println("Failed to get postaja");
+            return "Failed to get postaja";
+        }
+    }
+
+    @PostMapping(path = "/deletePostaja")
+    public @ResponseBody
+    Object deletePostaja(@RequestBody String body) throws JSONException {
+        JSONObject obj = new JSONObject(body);
+        String kljuc = obj.getString("kljuc");
+        String owner_oneaccountid = obj.getString("token");
+
+        try{
+            VremeRepo.deletePostaja(kljuc, owner_oneaccountid);
+
+            System.out.println("Postaja deleted");
+            return "Postaja deleted";
+        } catch(Exception e){
+            e.printStackTrace();
+            System.out.println("Failed to delete postaja");
+            return "Failed to delete postaja";
+        }
+    }
+
+
+    @PostMapping(path="/addUser")
+    public @ResponseBody
+    String addUser(@RequestBody String body) throws JSONException, IOException {
+        JSONObject obj = new JSONObject(body);
+        String token = obj.getString("token");
+
+        String onaccount_id = Utils.oneaccount_id(token);
+
+        try {
+            VremeRepo.createUser(onaccount_id);
+            System.out.println("User added");
+            return "User added";
+        } catch (Exception e){
+            e.printStackTrace();
+            System.out.println("Failed to add user");
+            return "Failed to add user";
+        }
+    }
+
+    @PostMapping(path="/getUserPostaje")
+    public @ResponseBody
+    Object getUserPostaje(@RequestBody String body) throws JSONException {
+        JSONObject obj = new JSONObject(body);
+        String token = obj.getString("token");
+
+        try {
+            System.out.println("Sent postaje for token: " + token);
+            return VremeRepo.getUserPostaje(token).toString();
+        } catch (Exception e){
+            e.printStackTrace();
+            System.out.println("Failed to get postaje");
+            return "Failed to get postaje";
+        }
     }
 
     @PostMapping(path="/last30")
